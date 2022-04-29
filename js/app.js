@@ -1,18 +1,26 @@
 /* 100devs tic-tac-toe js */
 https://github.com/Dev-Corinne/TicTacToe
 
-// Event listener for each cell.
-document.querySelector('#one').addEventListener('click', ()=>{
+// we will declare a reset variable that when the reset button is clicked a fresh start happens.
+const restartButton = document.querySelectorAll('#reset')
 
-})
-document.querySelector('#two').addEventListener('click', )
-document.querySelector('#three').addEventListener('click', )
-document.querySelector('#four').addEventListener('click', )
-document.querySelector('#five').addEventListener('click', )
-document.querySelector('#six').addEventListener('click', )
-document.querySelector('#seven').addEventListener('click', )
-document.querySelector('#eight').addEventListener('click', )
-document.querySelector('#nine').addEventListener('click', )
+// we will declare a variable for when a box is selected.
+const box = document.querySelectorAll('.box')
+
+// this function will determine the winner and alert it.
+const winner = () => {
+	
+}
+
+// this function will decide if the game was a tie and will alert if the game is a tie,
+const tie = () => {
+	
+}
+
+// this function will be used to reset the board when the restart button is clicked.
+const restart = () => {
+	
+}
 
 // Conditional - If three in a row are selected by either the user or AI. The game ends. If all squares are selected and three in a row does not occur. It is a draw.
 // Conditional - Three in a row means [0,1,2], [0,3,6], [0,4,8], [1,4,7], [2,5,8], [2,4,6], [3,4,5], or [6,7,8] all have the same value.
