@@ -2,7 +2,9 @@
 https://github.com/Dev-Corinne/TicTacToe
 
 // Event listener for each cell.
-document.querySelector('#one').addEventListener('click', )
+document.querySelector('#one').addEventListener('click', ()=>{
+
+})
 document.querySelector('#two').addEventListener('click', )
 document.querySelector('#three').addEventListener('click', )
 document.querySelector('#four').addEventListener('click', )
@@ -19,7 +21,7 @@ document.querySelector('#nine').addEventListener('click', )
 // Diagonally => 0,4,8; 2,4,6
 // Conditional - If any square is selected by either User or AI. The square cannot be reselected. 
 // Conditional - The player and the ai can each only make one move per turn.
-
+// Conditional - 
 
 //DIRECTIONS
 //player's turn: player click adds square number to array 'playerMove'
@@ -49,8 +51,19 @@ Win conditions:
 */
 
 switch (playerMove) {
-	case [0,1,2]
-}
+	case [0,1,2]:
+  case [0,3,6]:
+  case [0,4,8]:
+  case [3,4,5]:
+  case [1,4,7]:
+  case [2,4,6]:
+  case [6,7,8]:
+  case [2,5,8]:
+  	return ('Player wins!')
+    break;
+  default:
+  	return ('Tie!')
+} 
 
 class Squares {
 	constructor(id) {
@@ -71,7 +84,12 @@ class gameBoard {
 	}
 
 	createBoard(){
-		
+		for(let i =0; i < 9; i++){
+			let square = new Square(i);
+			board.push(square);
+		}
 	}
-
+	getBoard() {
+		return this.board; 
+	}
 }
