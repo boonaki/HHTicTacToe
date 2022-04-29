@@ -1,6 +1,13 @@
 /* 100devs tic-tac-toe CSS */
 /* https://github.com/Dev-Corinne/TicTacToe */
-
+.container {
+     height: 100vh;
+     width: 100vw;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     flex-direction: column;
+  }
 
 .game-board{
     display: grid;
@@ -9,17 +16,29 @@
   }
   
   body {
-  display: flex;
-  justify-content: center;
+      display: flex;
+      justify-content: center;
   }
   
   .box {
-  background: rgb(129, 129, 240);
-  border: 1px solid black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #AAA;
+      background: rgb(129, 129, 240);
+      border: 1px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #AAA;
+  }
+
+   #restart {
+       margin: 50px;
+       border: none;
+       font-weight: bold;
+       border-radius: 20px;
+       width: 125px;
+       height: 50px;
+       font-size: 15px;
+       color: yellow;
+       background-color: crimson;
   }
   
   .hidden {
