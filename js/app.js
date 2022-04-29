@@ -1,5 +1,5 @@
 /* 100devs tic-tac-toe js */
-https://github.com/Dev-Corinne/TicTacToe
+/*https://github.com/Dev-Corinne/TicTacToe*/
 
 // we will declare a reset variable that when the reset button is clicked a fresh start happens.
 const restartButton = document.querySelectorAll('#reset')
@@ -22,6 +22,12 @@ const restart = () => {
 	
 }
 
+const grid = [...document.querySelectorAll(".box")];
+for (let i = 0; i < grid.length; i++){
+    grid[i].addEventListener("click", (i)=>{
+        console.log(i.target.id)
+    })
+}
 // Conditional - If three in a row are selected by either the user or AI. The game ends. If all squares are selected and three in a row does not occur. It is a draw.
 // Conditional - Three in a row means [0,1,2], [0,3,6], [0,4,8], [1,4,7], [2,5,8], [2,4,6], [3,4,5], or [6,7,8] all have the same value.
 // Horizontally => 0,1,2; 3,4,5; 6,7,8
@@ -116,4 +122,4 @@ class gameBoard {
 //Someone#7786
 //OmNomNom#6057
 //NicLe#5006
-//DeMe#4447; 
+//DeMe#4447;
