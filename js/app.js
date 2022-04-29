@@ -2,18 +2,13 @@
 https://github.com/Dev-Corinne/TicTacToe
 
 // Event listener for each cell.
-document.querySelector('#one').addEventListener('click', ()=>{
 
-})
-document.querySelector('#two').addEventListener('click', )
-document.querySelector('#three').addEventListener('click', )
-document.querySelector('#four').addEventListener('click', )
-document.querySelector('#five').addEventListener('click', )
-document.querySelector('#six').addEventListener('click', )
-document.querySelector('#seven').addEventListener('click', )
-document.querySelector('#eight').addEventListener('click', )
-document.querySelector('#nine').addEventListener('click', )
-
+const grid = [...document.querySelectorAll(".box")];
+for (let i = 0; i < grid.length; i++){
+    grid[i].addEventListener("click", (i)=>{
+        console.log(i.target.id)
+    })
+}
 // Conditional - If three in a row are selected by either the user or AI. The game ends. If all squares are selected and three in a row does not occur. It is a draw.
 // Conditional - Three in a row means [0,1,2], [0,3,6], [0,4,8], [1,4,7], [2,5,8], [2,4,6], [3,4,5], or [6,7,8] all have the same value.
 // Horizontally => 0,1,2; 3,4,5; 6,7,8
@@ -108,4 +103,5 @@ class gameBoard {
 //Someone#7786
 //OmNomNom#6057
 //NicLe#5006
-//DeMe#4447; 
+//DeMe#4447;
+
