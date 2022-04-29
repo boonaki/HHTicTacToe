@@ -93,3 +93,19 @@ class gameBoard {
 		return this.board; 
 	}
 }
+//contributors:
+//We the people of 100Devs, 100baristas, 
+//Cormasaurus#4787
+//colinnn#1406
+//colin's dog, choco bork bork 
+//San An Stan#3218
+//Mish#5762
+//yoda30010#9626 (boonaki)
+//itmightbehere#69130
+//Michael the cat =^_^=
+//TheCrazyHorse#9867 
+//WiseOak#4084
+//Someone#7786
+//OmNomNom#6057
+//NicLe#5006
+//DeMe#4447; 
