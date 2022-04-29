@@ -1,7 +1,26 @@
 /* 100devs tic-tac-toe js */
-https://github.com/Dev-Corinne/TicTacToe
+/*https://github.com/Dev-Corinne/TicTacToe*/
 
-// Event listener for each cell.
+// we will declare a reset variable that when the reset button is clicked a fresh start happens.
+const restartButton = document.querySelectorAll('#reset')
+
+// we will declare a variable for when a box is selected.
+const box = document.querySelectorAll('.box')
+
+// this function will determine the winner and alert it.
+const winner = () => {
+	
+}
+
+// this function will decide if the game was a tie and will alert if the game is a tie,
+const tie = () => {
+	
+}
+
+// this function will be used to reset the board when the restart button is clicked.
+const restart = () => {
+	
+}
 
 const grid = [...document.querySelectorAll(".box")];
 for (let i = 0; i < grid.length; i++){
@@ -104,4 +123,3 @@ class gameBoard {
 //OmNomNom#6057
 //NicLe#5006
 //DeMe#4447;
-
