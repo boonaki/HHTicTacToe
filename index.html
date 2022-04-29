@@ -1,11 +1,14 @@
 <!-- 100devs tic-tac-toe HTML  -->
-https://github.com/Dev-Corinne/TicTacToe
+
 <!DOCTYPE html>
 <html lang="en">
 	<head>
     	<meta charset="utf-8">
     	<meta name="description" content="This is where your description goes">
     	<meta name="keywords" content="one, two, three">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300&display=swap" rel="stylesheet">
 
 		<title>Hamilton Tic-Tac-Toe</title>
 
@@ -14,20 +17,46 @@ https://github.com/Dev-Corinne/TicTacToe
 		<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
-		<img src="img/turbo.jpg" alt="Power Rangers Turbo">
 
-
-		<div class="parent">
-		<div id='one'>1</div>
-		<div id='two'>2</div>
-		<div id='three'>3</div>
-		<div id='four'>4</div>
-		<div id='five'>5</div>
-		<div id='six'>6</div>
-		<div id='seven'>7</div>
-		<div id='eight'>8</div>
-		<div id='nine'>9</div>
+		<div class="parent game-board">
+      <div id='one' class="box">
+        <span id="oneX" class="hidden">X</span>
+        <span id="oneO" class="hidden">O</span>
+      </div>
+      <div id='two' class="box">
+        <span id="twoX" class="hidden">X</span>
+        <span id="twoO" class="hidden">O</span>
+      </div>
+      <div id='three' class="box">
+        <span id="threeX" class="hidden">X</span>
+        <span id="threeO" class="hidden">O</span>
+      </div>
+      <div id='four' class="box">
+        <span id="fourX" class="hidden">X</span>
+        <span id="fourO" class="hidden">O</span>
+      </div>
+      <div id='five'class="box">
+        <span id="fiveX" class="hidden">X</span>
+        <span id="fiveO" class="hidden">O</span></div>
+      <div id='six'class="box">
+        <span id="sixX" class="hidden">X</span>
+        <span id="sixO" class="hidden">O</span>
+      </div>
+      <div id='seven'class="box">
+        <span id="sevenX" class="hidden">X</span>
+        <span id="sevenO" class="hidden">O</span>
+      </div>
+      <div id='eight'class="box">
+        <span id="eightX" class="hidden">X</span>
+        <span id="eightO" class="hidden">O</span>
+      </div>
+      <div id='nine'class="box">
+        <span id="nineX" class="hidden">X</span>
+        <span id="nineO" class="hidden">O</span>
+      </div>
 		</div>
 		<script type="text/javascript" src="js/main.js"></script>
+    
+    
 	</body>
 </html>
