@@ -1,17 +1,27 @@
-/* <!-- 100devs tic-tac-toe CSS  -->
-https://github.com/Dev-Corinne/TicTacToe
+/* 100devs tic-tac-toe CSS */
+/* https://github.com/Dev-Corinne/TicTacToe */
 
 
-<!-- 100devs tic-tac-toe CSS  -->
-https://github.com/Dev-Corinne/TicTacToe */
-
-
-.parent{
-display: grid;
-grid-template-columns: 150px 150px 150px;
-grid-template-rows: 150px 150px 150px;
-}
-
-.parent > div{
-background-color: skyblue;
-}
+.game-board{
+    display: grid;
+    grid-template-rows: 200px 200px 200px;
+    grid-template-columns: 200px 200px 200px;
+  }
+  
+  body {
+  display: flex;
+  justify-content: center;
+  }
+  
+  .box {
+  background: rgb(129, 129, 240);
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #AAA;
+  }
+  
+  .hidden {
+       display: none;
+  }
