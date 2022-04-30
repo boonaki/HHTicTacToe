@@ -2,7 +2,7 @@
 /*https://github.com/Dev-Corinne/TicTacToe*/
 
 // we will declare a reset variable that when the reset button is clicked a fresh start happens.
-const restartButton = document.querySelectorAll('#reset')
+const restartButton = document.querySelectorAll('#restart')
 
 // we will declare a variable for when a box is selected.
 const box = document.querySelectorAll('.box')
@@ -19,13 +19,18 @@ const tie = () => {
 
 // this function will be used to reset the board when the restart button is clicked.
 const restart = () => {
-	
+/* Need to toggle off innerHTML (x and O). Will look similar to document.getElementById(i.target.id).innerHTML = '';. I played around with it for a bit but I don't have time to get it to work!*/
 }
 
 const grid = [...document.querySelectorAll(".box")];
 for (let i = 0; i < grid.length; i++){
     grid[i].addEventListener("click", (i)=>{
         console.log(i.target.id)
+		if (document.getElementById(i.target.id).innerHTML === 'X') {
+			document.getElementById(i.target.id).innerHTML = '';
+		} else {
+			document.getElementById(i.target.id).innerHTML = 'X'
+		}
     })
 }
 // Conditional - If three in a row are selected by either the user or AI. The game ends. If all squares are selected and three in a row does not occur. It is a draw.
@@ -64,6 +69,7 @@ Win conditions:
 246
 */
 
+function switchFunction (playerMove) {
 switch (playerMove) {
 	case [0,1,2]:
   case [0,3,6]:
@@ -78,6 +84,7 @@ switch (playerMove) {
   default:
   	return ('Tie!')
 } 
+}
 
 class Squares {
 	constructor(id) {
