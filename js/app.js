@@ -4,7 +4,7 @@
 
 const rowSize = 3;
 // we will declare a variable for when a box is selected.
-const box = document.querySelectorAll('.box')
+const box = document.querySelectorAll('.box');
 
 // this function will determine the winner and alert it.
 const winner = () => {
@@ -39,7 +39,6 @@ class Square {
     }
 
     displayOwner(owner) {
-        // for now assume ai is
     }
 
     getOwner() {
@@ -47,7 +46,7 @@ class Square {
     }
 
     isOwned() {
-        return this.status != -1;
+        return this.status !== -1;
     }
 
     reset() {
@@ -64,16 +63,20 @@ class GameBoard {
         this.won = false;
         this.score = this.initScore();
         this.createBoard();
+        this.multiplayer = false;
+        // start with player 0
+        this.currentPlayer = 0;
     }
 
     debug() {
-        console.log(this.board)
-        console.log(this.moves)
+        console.log(this.board);
+        console.log(this.moves);
     }
 
     initScore() {
         if (!localStorage.getItem('score')) {
-            localStorage.setItem('score', JSON.stringify(Array.from(new Map([["x", 0], ["o", 0]]))));
+            localStorage.setItem('score',
+                JSON.stringify(Array.from(new Map([["x", 0], ["o", 0]]))));
         }
         return new Map(JSON.parse(localStorage.getItem('score')));
     }
@@ -90,21 +93,25 @@ class GameBoard {
         return this.board;
     }
 
+    setMultiplayer() {
+        this.resetBoard()
+        this.multiplayer = (!this.multiplayer);
+    }
+
     /**
      * On click function, main entrypoint
-     * @param player
      * @param loc
      * @return {boolean}
      */
-    onClick(player, loc) {
-        if (!this.board[loc].isOwned() && !this.won) {
-            this.board[loc].setOwner(player);
-            console.log(`Player ${player} now owns square ${loc}`)
-            // this.moves.push(loc);
-            this.moves.set(loc, player)
-            document.getElementById(loc).innerHTML = (player) ? 'X' : 'O';
-            this.checkWinner(player)
-            return true;
+    onClick(loc) {
+
+        this.choice(loc);
+
+        if (this.multiplayer) {
+            this.multiplayer = (this.multiplayer) ? 0 : 1
+        } else {
+            // TODO: need to plug in AI move
+            this.choice(loc);
             //AI's turn
             // let ai_loc = this.ai.choice(loc)
             // if (!this.board[ai_loc].isOwned()) {
@@ -113,18 +120,35 @@ class GameBoard {
             // 	this.checkWinner()
             // }
 
-        } else {
+
+        }
+    }
+
+    /**
+     * Checks location is a valid choice, if so then set the square and check if it's a winning move.
+     * @param loc {number} location in the array.
+     */
+    choice(loc) {
+        // TODO: decide to keep if else chain like this or nest branches.
+        if (!this.board[loc].isOwned() && !this.won) {
+            this.board[loc].setOwner(this.currentPlayer);
+            console.log(`Player ${this.currentPlayer} now owns square ${loc}`);
+            this.moves.set(loc, this.currentPlayer);
+            document.getElementById(loc.toString()).innerHTML = (this.currentPlayer) ? 'X' : 'O';
+            this.checkWinner(this.currentPlayer);
+        } else if (this.board[loc].isOwned()) {
             console.log(`Square ${loc} is already owned by ${
-                ((this.board[loc].getOwner() === 1) ? "Player" : "AI")}`)
-            return false;
+                ((this.board[loc].getOwner() === 1) ? "Player" : "AI")}`);
+        } else {
+            console.log("Game already decided");
         }
     }
 
     setAI(type) {
         // STUB, to hook once the AI js is committed to the repo
         // reset board
-        this.resetBoard()
-        console.log(type)
+        this.resetBoard();
+        console.log(type);
 
     }
 
@@ -198,8 +222,8 @@ class GameBoard {
     }
 
     saveScore() {
-        console.log(this.score)
-        localStorage.setItem('score', JSON.stringify(Array.from(this.score)))
+        // console.log(this.score);
+        localStorage.setItem('score', JSON.stringify(Array.from(this.score)));
     }
 
     resetBoard() {
@@ -225,24 +249,31 @@ gameBoard.onScoreChange();
 // All of this could be inside the gameBoard object, but not a big deal to have it here.
 
 // formats our querySelector from a nodeList to array.
-let player = 0;
 const grid = [...document.querySelectorAll(".box")];
 for (let i = grid.length; i--;) {
-    grid[i].addEventListener("click", (i) => gameBoard.onClick((player) ? --player : ++player, i.target.id))
+    grid[i].addEventListener("click", (i) => gameBoard.onClick(i.target.id));
 }
 // we will declare a reset variable that when the reset button is clicked a fresh start happens.
 const restartButton = document.getElementById("restart")
 if (restartButton) {
-    restartButton.addEventListener("click", _ => gameBoard.resetBoard())
+    restartButton.addEventListener("click", _ => gameBoard.resetBoard());
 }
-const setAIButton = document.getElementById("ai_change")
+const setAIButton = document.getElementById("ai_change");
 if (setAIButton) {
     setAIButton.addEventListener("click", _ =>
-        gameBoard.setAI(document.getElementById("idSelect").value))
+        gameBoard.setAI(document.getElementById("idSelect").value));
 }
-const setResetButton = document.getElementById("reset_score")
+const setResetButton = document.getElementById("reset_score");
 if (setResetButton) {
-    setResetButton.addEventListener("click", _ => gameBoard.resetScore())
+    setResetButton.addEventListener("click", _ => gameBoard.resetScore());
+}
+const setMultiplayerButton = document.getElementById("multiplayer");
+if (setMultiplayerButton) {
+    setMultiplayerButton.addEventListener("click", _ => {
+        gameBoard.setMultiplayer();
+        setMultiplayerButton.innerText = `${(Number(setMultiplayerButton.value)) ? "Enable" : "Disable"} multiplayer`;
+        setMultiplayerButton.value = `${(Number(setMultiplayerButton.value)) ? 1 : 0}`;
+    })
 }
 
 //contributors:
