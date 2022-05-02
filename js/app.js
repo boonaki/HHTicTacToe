@@ -1,6 +1,7 @@
 /* 100devs tic-tac-toe js */
 /*https://github.com/Dev-Corinne/TicTacToe*/
 
+import {Ai} from "./ai.mjs";
 
 const rowSize = 3;
 // we will declare a variable for when a box is selected.
@@ -55,11 +56,11 @@ class Square {
     }
 }
 
-class GameBoard {
+export class GameBoard {
     constructor() {
         this.board = null;
         this.moves = new Map();
-        // this.ai = new AI();
+        this.ai = new Ai();
         this.won = false;
         this.score = this.initScore();
         this.createBoard();
@@ -108,19 +109,16 @@ class GameBoard {
         this.choice(loc);
 
         if (this.multiplayer) {
-            this.multiplayer = (this.multiplayer) ? 0 : 1
+            this.currentPlayer = (this.currentPlayer) ? 0 : 1
         } else {
-            // TODO: need to plug in AI move
+            // TODO: need to plug in Ai move
             this.choice(loc);
-            //AI's turn
-            // let ai_loc = this.ai.choice(loc)
-            // if (!this.board[ai_loc].isOwned()) {
-            // 	this.board[ai_loc].setOwner(0)
-            // 	this.moves.set(ai_loc, 0)
-            // 	this.checkWinner()
-            // }
-
-
+            //Ai's turn
+            let ai_loc = this.ai.choice(loc)
+            console.log(ai_loc)
+            this.currentPlayer = (this.currentPlayer) ? 0 : 1
+            this.choice(ai_loc)
+            this.currentPlayer = (this.currentPlayer) ? 0 : 1
         }
     }
 
@@ -134,20 +132,21 @@ class GameBoard {
             this.board[loc].setOwner(this.currentPlayer);
             console.log(`Player ${this.currentPlayer} now owns square ${loc}`);
             this.moves.set(loc, this.currentPlayer);
-            document.getElementById(loc.toString()).innerHTML = (this.currentPlayer) ? 'X' : 'O';
+            document.getElementById(loc.toString()).innerHTML = (this.currentPlayer) ? 'O' : 'X';
             this.checkWinner(this.currentPlayer);
         } else if (this.board[loc].isOwned()) {
             console.log(`Square ${loc} is already owned by ${
-                ((this.board[loc].getOwner() === 1) ? "Player" : "AI")}`);
+                ((this.board[loc].getOwner() === 0) ? "Player" : "AI")}`);
         } else {
             console.log("Game already decided");
         }
     }
 
     setAI(type) {
-        // STUB, to hook once the AI js is committed to the repo
+        // STUB, to hook once the Ai js is committed to the repo
         // reset board
         this.resetBoard();
+        this.ai.setAi(type)
         console.log(type);
 
     }
@@ -155,7 +154,7 @@ class GameBoard {
     /**
      * Checks for a winner
      * @example checkWinner(1)
-     * @param {number} player either 1 for human, or 0 for AI
+     * @param {number} player either 1 for human, or 0 for Ai
      * @return {(number|null)} -1 for tie or player on win. If neither return null when there is no winner
      */
     checkWinner(player) {
@@ -167,6 +166,7 @@ class GameBoard {
         if (this.moves.size > 2) {
             if (this.moves.size === rowSize ** 2) {
                 console.log(`${player} has tied`);
+                this.currentPlayer = 0;
                 // return tie
                 return -1;
             }
@@ -211,6 +211,7 @@ class GameBoard {
     setWinner(player) {
         this.won = true;
         (player) ? this.score.set("x", this.score.get("x") + 1) : this.score.set("o", this.score.get("o") + 1)
+        this.currentPlayer = 0;
         this.onScoreChange();
         this.saveScore();
     }
@@ -238,6 +239,7 @@ class GameBoard {
         for (const player of this.score.keys()) {
             this.score.set(player, 0);
         }
+        this.saveScore();
         this.onScoreChange();
         this.resetBoard();
     }
@@ -272,7 +274,7 @@ if (setMultiplayerButton) {
     setMultiplayerButton.addEventListener("click", _ => {
         gameBoard.setMultiplayer();
         setMultiplayerButton.innerText = `${(Number(setMultiplayerButton.value)) ? "Enable" : "Disable"} multiplayer`;
-        setMultiplayerButton.value = `${(Number(setMultiplayerButton.value)) ? 1 : 0}`;
+        setMultiplayerButton.value = `${(Number(setMultiplayerButton.value)) ? 0 : 1}`;
     })
 }
 
