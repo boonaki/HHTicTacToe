@@ -28,6 +28,7 @@ class Square {
         this.status = -1;
         document.getElementById(this.id).innerHTML = ""
     }
+
 }
 
 class GameBoard {
@@ -333,4 +334,4 @@ gameBoard.init();
 //OmNomNom#6057
 //NicLe#5006
 //DeMe#4447;
-//m1chael#3550
+//m1chael#3550;
