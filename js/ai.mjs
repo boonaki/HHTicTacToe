@@ -1,46 +1,34 @@
-// 0 1 2
-// 3 4 5
-// 6 7 8
-// 0 == Ai 1 === player
-// export const name = "ai";
-import {GameBoard} from "./app.js";
-
 const rowSize = 3;
 export class Ai {
-    constructor(type = 0) {
-        // Ai will start from 0 easiest to 3 hardest, TODO: Allow this to be set by the parent class
+    /**
+     * @param {GameBoard} p GameBoard object to reference back to
+     * @param type AI type initial value.
+     */
+    constructor(p,type = 0) {
+        this.id = 2;
+        //reference to parent object
+        this.p = p;
+        // Ai will start from 0 easiest to 2 hardest, TODO: Allow this to be set by the parent class
         this.type = type;
         //map with Ai move to list of lists of winning strategies
-        this.aiTree = new Map();
         this.moves = new Map();
         this.possible = [...Array(rowSize ** 2).keys()]
-        console.log(this.possible)
         this.playerMoves = [];
-        this.aiMoves = [];
-        this.score = new Map([[0,5], [1,-5], [-1, 0]]);
-        // hardcode for now, TODO: See they can be calculated
-        this.corners = [0, 2, 6, 8];
-        // this.lastPlayerMove = Number.MAX_SAFE_INTEGER;
-        // this.lastAiMove = Number.MAX_SAFE_INTEGER;
+        this.score = new Map([[1,5], [2,-5], [0, 0]]);
+        this.tree = new Map();
     }
 
     // ((i < (arr.length/rows)) ? 1 : 0) * 2 + i *
     choice(playerMove) {
-        // Simple rules Ai is 0
-        // check if there are any immediate wining moves
-        // check if there are any player moves
-        // choose a random spot (TODO: more intelligent guessing)
-        // edges follow
-        // 0	+3,+4,+1
-        // 2	+3,+2,-1
-        // 6	-3,-2,+1
-        // 8	-3,-4,-1
+        if (this.p.won){
+            return
+        }
         let move = +playerMove
         this.playerMoves.push(move)
         // corners
         // if (this.moves.size === 0) {
-        this.update(move)
-        console.log(this.playerMoves, playerMove, this.possible)
+        this.updateMove(move)
+        // console.log(this.playerMoves, playerMove, this.possible)
         switch(this.type){
             case 0:
                 return this.easyAI()
@@ -48,112 +36,93 @@ export class Ai {
                 return this.randomAI()
             default:
                 return this.impossibleAI()
+                // return this.impossibleAI()
 
         }
-        // } else {
-        //     let ret = 0;
-        //     if (playerMove === 5) {
-        //         // if x started in the middle, pick a corner
-        //         do {
-        //             let choice = Math.floor(Math.random() * 3);
-        //             ret = this.corners[choice];
-        //         } while (playerMove === ret)
-        //         this.aiTree.set(this.aiTree.size, [])
-        //     } else {
-        //         // always pick middle
-        //         ret = 5
-        //     }
-        //     // let the Ai keep track of their moves
-        //     this.moves.set(ret, 0);
-        //     this.aiMoves.push(ret);
-        //     return ret;
-        //
-        // }
     }
 
-    update(move){
-        this.possible.splice(this.possible.findIndex(e => move === e), 1)
+    updateMove(move){
+        this.possible = this.possible.filter(e=> e!==move)
         this.moves.set(move, 1)
 
     }
 
+    /**
+     * Using a rng, have the computer generate moves.
+     * @return {number} location in the array to place the computers move
+     */
     easyAI() {
-        let rand = Math.floor(Math.random()*this.possible.length)
-        let ret = this.possible[rand];
-        console.log("R:",ret,"A:", this.possible,"R:", rand);
-        this.update(ret)
-        return ret;
+        let move = this.possible[Math.floor(Math.random()*this.possible.length)];
+        this.updateMove(move)
+        return move;
     }
 
-    impossibleAI(board) {
-        // implement minimax
-        // Both players are given two scores min and max. The algorithm decides using a tree
-        // which will alternate between min and max players which will then choose the appropriate
-        // move base on both players playing optimally.
-        let bScore = -Infinity;
+    randomAI() {
         let move;
-        for (const candidate of this.possible){
-            board[candidate].setOwner(0);
-            // TODO: REDO
-            let score = this.mm(0, false);
-            // let score = check[0]
-            board[candidate].reset();
-            if (score > bScore){
-                bScore = score;
-                move = candidate[1];
-            }
+        // will be a combination of the two, coin flip style between random and impossible
+        if (Math.floor(Math.random()*99) > 50){
+            move = this.easyAI();
+        } else {
+            move  = this.impossibleAI();
         }
-        this.possible.splice(move)
-        this.update(move)
+        this.updateMove(move);
         return move;
 
     }
 
-    randomAI() {
+    impossibleAI(){
+        let bestScore = Infinity
         let move
-        // will be a combination of the two, coin flip style between random and impossible
-        if (Math.floor(Math.random()*99) > 50){
-            move = this.easyAI()
-        } else {
-            move  = this.impossibleAI()
-        }
-        this.update(move)
-        return move
-
-    }
-
-    mm(board, depth, isMax) {
-        function mm_h(depth, player) {
-            let bScore = -Infinity;
-            for (const candidate of this.possible) {
-                board[candidate].setOwner(0);
-                let score = this.mm(board, depth + 1, ((player) ?  0:1));
-                board[candidate].reset();
-                bScore = (player) ? Math.max(bScore, score) : Math.min(bScore, score);
+        for (const candidate  of this.possible){
+            this.p.setBoardSquare = {square: candidate, player: this.id}
+            let score = this.mm(this.possible.filter((e) => e !== candidate), 0, 1, [candidate])
+            this.p.resetSquare = candidate
+            this.tree.set(candidate, score)
+            if (score < bestScore){
+                bestScore = score
+                move = candidate
             }
-            return bScore;
         }
-        if (gameBoard.checkWinner(isMax) != null) {
-            // 1 = player, 0 = Ai
-            return this.score.get(isMax);
-        }
-        // 0 is falsy
-        return (isMax) ? mm_h(depth + 1, 0) : mm_h(depth + 1, 1)
+        this.tree = new Map()
+        this.updateMove(move)
+        return move
     }
-
+    /**
+     * minimax implemented using info from https://en.wikipedia.org/wiki/Minimax adapted for
+     * use here.
+     * @param possible {Array<number>} possible moves to make
+     * @param depth recursive check for knowing how far we should go
+     * @param player {number} 1 or 2 depending on the player
+     * @param moves {Array<number>} tracking moves in the simulation.
+     * @return {number} will return a score, a number of how good the move is in accordance with
+     *  the calculated optimal move for the adversary to move on.
+     */
+    mm(possible, depth, player, moves) {
+        let res = this.p.checkWinnerHelper((player === 1) ? 2 : 1, moves.length, true)
+        if (res !== null) {
+            return this.score.get(res) - depth
+        }
+        let bScore = (player === 1)? -Infinity : Infinity
+        // for (let i = rowSize**2;i--;){
+        for (const candidate of possible){
+            if(this.p.squareIsNotOwned(candidate)){
+                this.p.setBoardSquare = {square: candidate, player: player}
+                moves.push(candidate)
+                let score = this.mm(possible.filter((e) => e !== candidate), depth+1, (player === 1)? 2:1, moves)
+                this.p.resetSquare = moves.pop()
+                bScore = (player === 1)? Math.max(score, bScore) : Math.min(score, bScore)
+            }
+        }
+        return bScore
+    }
     setAi(type){
-        this.type = type
+        this.type = +type
+        this.reset()
+        console.log(`SET AI TO ${type}`)
+    }
+    reset(){
+        this.moves = new Map();
+        this.possible = [...Array(rowSize ** 2).keys()]
+        this.playerMoves = [];
     }
 }
-
-//     function mm_h(board, depth) {
-//         if (depth > maxDepth) {
-//             return board
-//         }
-//         let bScore = -Infinity;
-//         let move;
-//         for (let i = 0; i < rowSize ** 2; i++) {
-//
-//         }
-//     }
-// }
