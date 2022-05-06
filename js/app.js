@@ -1,132 +1,337 @@
 /* 100devs tic-tac-toe js */
 /*https://github.com/Dev-Corinne/TicTacToe*/
 
-// we will declare a reset variable that when the reset button is clicked a fresh start happens.
-const restartButton = document.querySelectorAll('#restart')
+import {Ai} from "./ai.mjs";
 
-// we will declare a variable for when a box is selected.
-const box = document.querySelectorAll('.box')
+const rowSize = 3;
 
-// this function will determine the winner and alert it.
-const winner = () => {
-	
+class Square {
+    constructor(id) {
+        this.id = id;
+        this.status = -1;
+    }
+
+    setOwner(owner) {
+        // set status to whichever player owns the square
+        this.status = owner;
+    }
+
+    getOwner() {
+        return this.status;
+    }
+
+    isOwned() {
+        return this.status !== -1;
+    }
+
+    reset() {
+        this.status = -1;
+        document.getElementById(this.id).innerHTML = ""
+    }
+
 }
 
-// this function will decide if the game was a tie and will alert if the game is a tie,
-const tie = () => {
-	
+class GameBoard {
+    #won;
+    #tied;
+    constructor() {
+        this.board = null;
+        this.moves = new Map();
+        //Send a reference of the GameBoard object
+        this.ai = new Ai(this);
+        this.#won = false;
+        this.#tied = false;
+        this.score = this.initScore();
+        this.createBoard();
+        this.multiplayer = false;
+        // start with player 1
+        this.currentPlayer = 1;
+    }
+
+    /**
+     * Make sure there we keep track of the score, use local storage to do so.
+     * @return {Map<String, Number>} Map containing our score in localStorage
+     */
+    initScore() {
+        if (!localStorage.getItem('score')) {
+            localStorage.setItem('score',
+                JSON.stringify(Array.from(new Map([["x", 0], ["o", 0]]))));
+        }
+        return new Map(JSON.parse(localStorage.getItem('score')));
+    }
+
+    createBoard() {
+        let ret = [];
+        for (let i = 0; i < rowSize ** 2; i++) {
+            ret.push(new Square(i));
+        }
+        this.board = ret;
+    }
+
+    setMultiplayer() {
+        this.resetBoard();
+        this.multiplayer = (!this.multiplayer);
+    }
+
+    /**
+     * On click function, main entrypoint when the user clicks on the square
+     * @param loc square location based on a 9 length array
+     * @return {boolean}
+     */
+    onClick(loc) {
+        if (this.multiplayer) {
+            if (this.choice(loc)){this.currentPlayer = (this.currentPlayer === 1) ? 2 : 1;}
+        } else {
+            if (this.choice(loc)){
+                //Ai's turn
+                if (this.#won || this.#tied){return true;}
+                // make sure we switch to the AI player
+                this.currentPlayer = (this.currentPlayer === 1) ? 2 : 1;
+                this.choice(this.ai.choice(loc));
+                // AI has made its move, switch current player back to human.
+                this.currentPlayer = (this.currentPlayer === 1) ? 2 : 1;
+            }
+
+        }
+    }
+
+    /**
+     * Checks location is a valid choice, if so then set the square and check if it's a winning move.
+     * @param loc {number} location in the array.
+     */
+    choice(loc) {
+        // TODO: decide to keep if else chain like this or nest branches.
+        if (!this.board[loc].isOwned()  && !this.won && !this.tied) {
+            this.board[loc].setOwner(this.currentPlayer);
+            this.moves.set(loc, this.currentPlayer);
+            document.getElementById(loc.toString()).innerHTML = (this.currentPlayer === 1) ? 'X' : 'O';
+            this.checkWinner();
+            return true;
+        } else if (this.board[loc].isOwned()) {
+            // TODO: Alert the player in the DOM?
+            console.log(`Square ${loc} is already owned by ${
+                ((this.board[loc].getOwner() === 1) ? "Player" : "AI")}`);
+            return false;
+        } else {
+            // TODO: Alert the player in the DOM?
+            console.log("Game already decided");
+            return false;
+        }
+    }
+
+    /**
+     * Sets AI type from 0 easiest to 2 which is unwinnable
+     * @param type {number} 0: easy, 1: random, 2: unwinnable
+     */
+    setAI(type) {
+        this.resetBoard();
+        this.ai.setAi(type);
+    }
+
+    /**
+     * Checks for a winner
+     * @return {(number|null)} -1 for tie or player on win. If neither return null when there is no winner
+     */
+    checkWinner() {
+        let check = this.checkWinnerHelper();
+        if (check === 1 || check === 2){
+            console.log(`${this.currentPlayer} has won!`);
+            this.setWinner(this.currentPlayer);
+        }
+        return check;
+    }
+
+    /**
+     * Does the actual checking for wining scenarios.
+     * @param player {number} when called from inside the function, uses the currentPlayer attribute,
+     *  otherwise use specifies the player id to check for wining condition
+     * @param moves  {number} the number of moves already made.
+     * @param simulated {boolean} set to true if it is being called by CPU player
+     * @return {null|number} returns either winning playerId (1 for player, 2 for AI),
+     *  null on no win, and 0 on a tie.
+     */
+    checkWinnerHelper(player = this.currentPlayer, moves = this.moves.size, simulated = false){
+        // in case this is being called for simulation, make sure we count all moves
+        if (simulated){
+            moves += this.moves.size;
+        }
+        // Only check for winning moves after 5 moves, there no possible win before that
+        // (3 moves from player 0, 2 moves from player 1)
+        if (moves > 5) {
+            for (let i = 0; i < 7; i++) {
+                if (this.board[i].getOwner() === player) {
+                    if (i < rowSize) {
+                        if (this.board[i].getOwner() === this.board[i + 3].getOwner() &&
+                            this.board[i + 6].getOwner() === this.board[i].getOwner()) {
+                            //vertical win
+                            if (!simulated){this.highlight_win(i, i + 3, i + 6);}
+                            return player;
+                        }
+                        if (!(i % 2)) {
+                            // only check 0 and 2
+                            if (this.board[i].getOwner() === this.board[4].getOwner() &&
+                                this.board[((i === 0) ? 4 : 3) * 2].getOwner() === this.board[i].getOwner()) {
+                                //diagonal win
+                                if (!simulated){this.highlight_win(i, 4, ((i === 0) ? 4 : 3) * 2);}
+                                return player;
+                            }
+                        }
+                    }
+                    if (!(i % 3)) {
+                        if (this.board[i].getOwner() === this.board[i + 1].getOwner() &&
+                            this.board[i + 2].getOwner() === this.board[i].getOwner()) {
+                            // horizontal win
+                            if (!simulated){this.highlight_win(i, i+1, i+2);}
+                            return player;
+                        }
+                    }
+                }
+            }
+            if (moves === rowSize ** 2) {
+                if (this.currentPlayer === player && moves === this.moves.size) {
+                    this.#tied = true;
+                    console.log(`${player} has tied`);
+                }
+                // return tie
+                return 0;
+            }
+        }
+            // no winners
+            return null;
+    }
+    resetColor(){
+        for (let i = rowSize ** 2; i--;){
+            document.getElementById(`${i}`).style.color = "#AAA";
+        }
+    }
+
+    /**
+     * highlights winning squares
+     * @param {...number} squares set of squares that are the winning set
+     */
+    highlight_win(...squares){
+        for (const square of squares){document.getElementById(`${square}`).style.color = "red";}
+    }
+
+    /**
+     * Sets winner in code, in the DOM, and localstorage
+     * @param player {number} Player that won the game.
+     */
+    setWinner(player) {
+        this.#won = true;
+        (player === 1) ? this.score.set("x", this.score.get("x") + 1) : this.score.set("o", this.score.get("o") + 1);
+        this.onScoreChange();
+        this.saveScore();
+    }
+
+    onScoreChange() {
+        for (const [player, score] of this.score.entries()) {
+            document.getElementById(`${player}Value`).innerText = score.toString();
+        }
+    }
+
+    saveScore() {
+        localStorage.setItem('score', JSON.stringify(Array.from(this.score)));
+    }
+
+    resetBoard() {
+        this.currentPlayer = 1;
+        this.ai.reset();
+        this.#won = false;
+        this.#tied = false;
+        for (const sq of this.board) {
+            sq.reset();
+            this.moves = new Map();
+            this.#won = false;
+        }
+        this.resetColor();
+    }
+
+    resetScore() {
+        for (const player of this.score.keys()) {
+            this.score.set(player, 0);
+        }
+        this.saveScore();
+        this.onScoreChange();
+        this.resetBoard();
+    }
+    get won(){
+        return this.#won;
+    }
+    get tied(){
+        return this.#tied;
+    }
+
+    squareIsNotOwned(square){
+        return !this.board[square].isOwned();
+    }
+    /**
+     *
+     * @param obj {{square: number, player: number}} square denotes which square in the array is being
+     * used, player is the player id to set the square as
+     */
+    set setBoardSquare(obj){
+        this.board[obj.square].setOwner(obj.player);
+    }
+    /**
+     * @param {number} square
+     */
+    set resetSquare(square){
+        this.board[square].reset();
+    }
+
+    init(){
+        for (const square of document.querySelectorAll(".box")){
+            square.addEventListener("click", (i) => this.onClick(i.target.id));
+        }
+        // we will declare a reset variable that when the reset button is clicked a fresh start happens.
+        const restartButton = document.getElementById("restart");
+        if (restartButton) {
+            restartButton.addEventListener("click", _ => this.resetBoard());
+        }
+        const setAIButton = document.getElementById("ai_change");
+        if (setAIButton) {
+            setAIButton.addEventListener("click", _ =>
+                this.setAI(document.getElementById("idSelect").value));
+        }
+        const setResetButton = document.getElementById("reset_score");
+        if (setResetButton) {
+            setResetButton.addEventListener("click", _ => this.resetScore());
+        }
+        const setMultiplayerButton = document.getElementById("multiplayer");
+        if (setMultiplayerButton) {
+            setMultiplayerButton.addEventListener("click", _ => {
+                this.setMultiplayer();
+                setMultiplayerButton.innerText = `${(Number(setMultiplayerButton.value)) ? "Enable" : "Disable"} multiplayer`;
+                setMultiplayerButton.value = `${(Number(setMultiplayerButton.value)) ? 0 : 1}`;
+            })
+        }
+    }
 }
 
-// this function will be used to reset the board when the restart button is clicked.
-const restart = () => {
-/* Need to toggle off innerHTML (x and O). Will look similar to document.getElementById(i.target.id).innerHTML = '';. I played around with it for a bit but I don't have time to get it to work!*/
-}
 
-const grid = [...document.querySelectorAll(".box")];
-for (let i = 0; i < grid.length; i++){
-    grid[i].addEventListener("click", (i)=>{
-        console.log(i.target.id)
-		if (document.getElementById(i.target.id).innerHTML === 'X') {
-			document.getElementById(i.target.id).innerHTML = '';
-		} else {
-			document.getElementById(i.target.id).innerHTML = 'X'
-		}
-    })
-}
-// Conditional - If three in a row are selected by either the user or AI. The game ends. If all squares are selected and three in a row does not occur. It is a draw.
-// Conditional - Three in a row means [0,1,2], [0,3,6], [0,4,8], [1,4,7], [2,5,8], [2,4,6], [3,4,5], or [6,7,8] all have the same value.
-// Horizontally => 0,1,2; 3,4,5; 6,7,8
-// Vertically => 0,3,6; 1,4,7; 2,5,8
-// Diagonally => 0,4,8; 2,4,6
-// Conditional - If any square is selected by either User or AI. The square cannot be reselected. 
-// Conditional - The player and the ai can each only make one move per turn.
-// Conditional - 
+const gameBoard = new GameBoard();
+// set the score on the page
+gameBoard.onScoreChange();
+// init all elements on the page
+gameBoard.init();
 
-//DIRECTIONS
-//player's turn: player click adds square number to array 'playerMove'
-//bot move: bot adds random number to array 'botMove'
 
-let ticTacToe = [0,0,0,0,0,0,0,0,0]
-let playerMove = []
-let botMove = []
-let chooseRandom = Math.floor(Math.random()*9)
 
-/*
-0 1 2
-3 4 5
-6 7 8
-
-Win conditions:
-012
-345
-678
-
-036
-147
-258
-
-048
-246
-*/
-
-function switchFunction (playerMove) {
-switch (playerMove) {
-	case [0,1,2]:
-  case [0,3,6]:
-  case [0,4,8]:
-  case [3,4,5]:
-  case [1,4,7]:
-  case [2,4,6]:
-  case [6,7,8]:
-  case [2,5,8]:
-  	return ('Player wins!')
-    break;
-  default:
-  	return ('Tie!')
-} 
-}
-
-class Squares {
-	constructor(id) {
-		this.id = id
-    this.status = 0; 
-	}
-  getId() {
-		return this.id; 
-	}
-  changeStatus(){
-	 	this.status = 1; 
-	}
-}
-
-class gameBoard {
-	constructor(board){
-		this.board = board;
-	}
-
-	createBoard(){
-		for(let i =0; i < 9; i++){
-			let square = new Square(i);
-			board.push(square);
-		}
-	}
-	getBoard() {
-		return this.board; 
-	}
-}
 //contributors:
-//We the people of 100Devs, 100baristas, 
+//We the people of 100Devs, 100baristas,
 //Cormasaurus#4787
 //colinnn#1406
-//colin's dog, choco bork bork 
+//colin's dog, choco bork bork
 //San An Stan#3218
 //Mish#5762
 //yoda30010#9626 (boonaki)
 //itmightbehere#69130
 //Michael the cat =^_^=
-//TheCrazyHorse#9867 
+//TheCrazyHorse#9867
 //WiseOak#4084
 //Someone#7786
 //OmNomNom#6057
 //NicLe#5006
 //DeMe#4447;
+//m1chael#3550;
