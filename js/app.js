@@ -157,7 +157,7 @@ class GameBoard {
         }
         // Only check for winning moves after 5 moves, there no possible win before that
         // (3 moves from player 0, 2 moves from player 1)
-        if (moves > 5) {
+        if (moves >= 5) {
             for (let i = 0; i < 7; i++) {
                 if (this.board[i].getOwner() === player) {
                     if (i < rowSize) {
