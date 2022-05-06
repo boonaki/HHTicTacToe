@@ -56,17 +56,19 @@ class Square {
     }
 }
 
-export class GameBoard {
+class GameBoard {
     constructor() {
         this.board = null;
         this.moves = new Map();
-        this.ai = new Ai();
+        //Send a reference to the parent object
+        this.ai = new Ai(this);
         this.won = false;
+        this.tied = false;
         this.score = this.initScore();
         this.createBoard();
         this.multiplayer = false;
-        // start with player 0
-        this.currentPlayer = 0;
+        // start with player 1
+        this.currentPlayer = 1;
     }
 
     debug() {
@@ -109,16 +111,17 @@ export class GameBoard {
         this.choice(loc);
 
         if (this.multiplayer) {
-            this.currentPlayer = (this.currentPlayer) ? 0 : 1
+            this.currentPlayer = (this.currentPlayer === 1) ? 2 : 1
         } else {
             // TODO: need to plug in Ai move
             this.choice(loc);
             //Ai's turn
+            if (this.won || this.tied){return true}
             let ai_loc = this.ai.choice(loc)
             console.log(ai_loc)
-            this.currentPlayer = (this.currentPlayer) ? 0 : 1
+            this.currentPlayer = (this.currentPlayer === 1) ? 2 : 1
             this.choice(ai_loc)
-            this.currentPlayer = (this.currentPlayer) ? 0 : 1
+            this.currentPlayer = (this.currentPlayer === 1) ? 2 : 1
         }
     }
 
@@ -128,16 +131,18 @@ export class GameBoard {
      */
     choice(loc) {
         // TODO: decide to keep if else chain like this or nest branches.
-        if (!this.board[loc].isOwned() && !this.won) {
+        if (!this.board[loc].isOwned()  && !this.won && !this.tied) {
             this.board[loc].setOwner(this.currentPlayer);
             console.log(`Player ${this.currentPlayer} now owns square ${loc}`);
             this.moves.set(loc, this.currentPlayer);
-            document.getElementById(loc.toString()).innerHTML = (this.currentPlayer) ? 'O' : 'X';
-            this.checkWinner(this.currentPlayer);
+            console.log("CP", this.currentPlayer)
+            document.getElementById(loc.toString()).innerHTML = (this.currentPlayer === 1) ? 'X' : 'O';
+            this.checkWinner(loc);
         } else if (this.board[loc].isOwned()) {
             console.log(`Square ${loc} is already owned by ${
-                ((this.board[loc].getOwner() === 0) ? "Player" : "AI")}`);
+                ((this.board[loc].getOwner() === 1) ? "Player" : "AI")}`);
         } else {
+            // console.log(this.won, )
             console.log("Game already decided");
         }
     }
@@ -154,64 +159,66 @@ export class GameBoard {
     /**
      * Checks for a winner
      * @example checkWinner(1)
-     * @param {number} player either 1 for human, or 0 for Ai
+     * @param {number} loc either 1 for human, or 0 for Ai
      * @return {(number|null)} -1 for tie or player on win. If neither return null when there is no winner
      */
-    checkWinner(player) {
+    checkWinner(loc) {
+        let check = this.checkWinnerHelper(loc);
+        // -1 and null should be falsy, so it's an easy if check
+        if (check === 1 || check === 2){
+            console.log(`${this.currentPlayer} has won!`);
+            this.setWinner(this.currentPlayer);
+        }
+        return check;
+    }
+    checkWinnerHelper(loc){
         // Only check for winning moves after 5 moves, there no possible win before that
         // (3 moves from player 0, 2 moves from player 1)
         // returns two boolean values, one if game is finished (two cases, in the case of tie/win)
         // Return values: -1 in case of tie, otherwise the player on a win, or null in case there is no
         // winner.
         if (this.moves.size > 2) {
-            if (this.moves.size === rowSize ** 2) {
-                console.log(`${player} has tied`);
-                this.currentPlayer = 0;
-                // return tie
-                return -1;
-            }
             for (let i = 0; i < 7; i++) {
-                if (this.board[i].getOwner() === player) {
+                if (this.board[i].getOwner() === this.board[loc].getOwner()) {
                     if (i < rowSize) {
-                        if (player === this.board[i + 3].getOwner() &&
-                            this.board[i + 6].getOwner() === player) {
+                        if (this.board[loc].getOwner() === this.board[i + 3].getOwner() &&
+                            this.board[i + 6].getOwner() === this.board[loc].getOwner()) {
                             //vertical win
-                            console.log(`${player} has won!`);
-                            this.setWinner(player);
-                            return player;
+                            return this.currentPlayer;
                         }
                         if (!(i % 2)) {
                             // only check 0 and 2
-                            if (player === this.board[((i === 0) ? 4 : 2) * 1].getOwner() &&
-                                this.board[((i === 0) ? 4 : 2) * 2].getOwner() === player) {
+                            if (this.board[i].getOwner() === this.board[4].getOwner() &&
+                                this.board[((i === 0) ? 4 : 3) * 2].getOwner() === this.board[i].getOwner()) {
                                 //diagonal win
-                                console.log(`${player} has won!`);
-                                this.setWinner(player);
-                                return player;
+                                return this.currentPlayer;
                             }
                         }
                     }
                     if (!(i % 3)) {
-                        if (player === this.board[i + 1].getOwner() &&
-                            this.board[i + 2].getOwner() === player) {
+                        if (this.board[loc].getOwner() === this.board[i + 1].getOwner() &&
+                            this.board[i + 2].getOwner() === this.board[loc].getOwner()) {
                             // horizontal win
-                            console.log(`${player} has won!`);
-                            this.setWinner(player);
-                            return player;
+                            return this.currentPlayer;
                         }
                     }
                 }
+            }
+            if (this.moves.size === rowSize ** 2) {
+                this.tied = true;
+                console.log(`${this.currentPlayer} has tied`);
+                // return tie
+                return -1;
             }
         } else {
             // No one has won yet
             return null;
         }
     }
-
     setWinner(player) {
+        console.log("W:", player)
         this.won = true;
-        (player) ? this.score.set("x", this.score.get("x") + 1) : this.score.set("o", this.score.get("o") + 1)
-        this.currentPlayer = 0;
+        (player === 1) ? this.score.set("x", this.score.get("x") + 1) : this.score.set("o", this.score.get("o") + 1)
         this.onScoreChange();
         this.saveScore();
     }
@@ -228,6 +235,10 @@ export class GameBoard {
     }
 
     resetBoard() {
+        this.currentPlayer = 1;
+        this.ai.reset();
+        this.won = false;
+        this.tied = false;
         for (const sq of this.board) {
             sq.reset();
             this.moves = new Map();
