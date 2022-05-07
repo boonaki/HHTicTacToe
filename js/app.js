@@ -26,7 +26,7 @@ class Square {
 
     reset() {
         this.status = -1;
-        document.getElementById(this.id).innerHTML = ""
+        document.getElementById(this.id).innerText = ""
     }
 
 }
@@ -104,7 +104,7 @@ class GameBoard {
         if (!this.board[loc].isOwned()  && !this.won && !this.tied) {
             this.board[loc].setOwner(this.currentPlayer);
             this.moves.set(loc, this.currentPlayer);
-            document.getElementById(loc.toString()).innerHTML = (this.currentPlayer === 1) ? 'X' : 'O';
+            document.getElementById(loc.toString()).innerText = (this.currentPlayer === 1) ? 'X' : 'O';
             this.checkWinner();
             return true;
         } else if (this.board[loc].isOwned()) {
@@ -126,6 +126,7 @@ class GameBoard {
     setAI(type) {
         this.resetBoard();
         this.ai.setAi(type);
+        this.setAIToPage(type)
     }
 
     /**
@@ -305,6 +306,12 @@ class GameBoard {
                 setMultiplayerButton.innerText = `${(Number(setMultiplayerButton.value)) ? "Enable" : "Disable"} multiplayer`;
                 setMultiplayerButton.value = `${(Number(setMultiplayerButton.value)) ? 0 : 1}`;
             })
+        }
+        this.setAIToPage();
+    }
+    setAIToPage(type = this.ai.type){
+        for (const element of document.getElementsByClassName("ai-level")){
+            element.innerText = type;
         }
     }
 }
