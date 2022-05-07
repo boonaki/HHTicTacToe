@@ -282,7 +282,7 @@ class GameBoard {
     }
 
     init(){
-        for (const square of document.querySelectorAll(".box")){
+        for (const square of document.getElementsByClassName("box")){
             square.addEventListener("click", (i) => this.onClick(i.target.id));
         }
         // we will declare a reset variable that when the reset button is clicked a fresh start happens.
