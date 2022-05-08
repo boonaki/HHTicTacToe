@@ -7,6 +7,7 @@ export class Ai {
     constructor(p,type = 0) {
         this.id = 2;
         //reference to parent object
+        // TODO: instead of sending a reference to the whole object, send only the functions needed
         this.p = p;
         // Ai will start from 0 easiest to 2 hardest
         this.type = type;
@@ -70,8 +71,10 @@ export class Ai {
         let move;
         for (const candidate  of this.possible){
             this.p.setBoardSquare = {square: candidate, player: this.id};
-            const score = this.mm(this.possible.filter((e) => e !== candidate), 0, 1, [candidate]);
+            const score = this.mm(this.possible.filter((e) => e !== candidate),
+                0, 1, [candidate]);
             this.p.resetSquare = candidate;
+            // Second-highest level of the tree
             this.tree.set(candidate, score);
             if (score < bestScore){
                 bestScore = score;
@@ -93,19 +96,25 @@ export class Ai {
      *  the calculated optimal move for the adversary to move on.
      */
     mm(possible, depth, player, moves) {
-        const res = this.p.checkWinnerHelper((player === 1) ? 2 : 1, moves.length, true);
+        let bScore, adversary
+        if (player === 1){
+            bScore = -Infinity
+            adversary = 2
+        } else {
+            bScore = Infinity
+            adversary = 1
+        }
+        const res = this.p.checkWinnerHelper(adversary, moves.length, true);
         if (res !== null) {
             return this.score.get(res) - depth;
         }
-        let bScore = (player === 1)? -Infinity : Infinity;
         for (const candidate of possible){
-            if(this.p.squareIsNotOwned(candidate)){
-                this.p.setBoardSquare = {square: candidate, player: player};
-                moves.push(candidate);
-                let score = this.mm(possible.filter((e) => e !== candidate), depth+1, (player === 1)? 2:1, moves);
-                this.p.resetSquare = moves.pop();
-                bScore = (player === 1)? Math.max(score, bScore) : Math.min(score, bScore);
-            }
+            this.p.setBoardSquare = {square: candidate, player: player};
+            moves.push(candidate);
+            let score = this.mm(possible.filter((e) => e !== candidate),
+                depth+1, adversary, moves);
+            this.p.resetSquare = moves.pop();
+            bScore = (player === 1)? Math.max(score, bScore) : Math.min(score, bScore);
         }
         return bScore;
     }
