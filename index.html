@@ -2,70 +2,67 @@
 
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Tic-Tac-Toe Game">
+        <meta name="keywords" content="TicTacToe, game,">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300&display=swap" rel="stylesheet">
+        <link rel="icon" href="ico/favicon.ico">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="description" content="This is where your description goes">
-    <meta name="keywords" content="one, two, three">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300&display=swap" rel="stylesheet">
-    <link rel="icon" href="ico/favicon.ico">
 
+        <title>Hamilton Tic-Tac-Toe</title>
 
-    <title>Hamilton Tic-Tac-Toe</title>
+        <!-- external CSS link -->
+        <!--    <link rel="stylesheet" href="css/normalize.css">-->
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <div class="parent game-board">
+            <div id='0' class="box"></div>
 
-    <!-- external CSS link -->
-    <!--    <link rel="stylesheet" href="css/normalize.css">-->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<div class="parent game-board">
-    <div id='0' class="box"></div>
+            <div id='1' class="box"></div>
 
-    <div id='1' class="box"></div>
+            <div id='2' class="box"></div>
 
-    <div id='2' class="box"></div>
+            <div id='3' class="box"></div>
 
-    <div id='3' class="box"></div>
+            <div id='4' class="box"></div>
 
-    <div id='4' class="box"></div>
+            <div id='5' class="box"></div>
 
-    <div id='5' class="box"></div>
+            <div id='6' class="box"></div>
 
-    <div id='6' class="box"></div>
+            <div id='7' class="box"></div>
 
-    <div id='7' class="box"></div>
+            <div id='8' class="box"></div>
 
-    <div id='8' class="box"></div>
-
-    <div id="forms">
-        <form>
-            <button id="restart" type="button">RESTART AND PLAY AGAIN</button>
-        </form>
-        <div id="scoreBoard">
-            <span>X: <span id="xValue">0</span> O: <span id="oValue">0</span></span>
+            <div id="forms">
+                <form>
+                    <button id="restart" type="button">RESTART AND PLAY AGAIN</button>
+                </form>
+                <div id="scoreBoard">
+                    <span>X: <span id="xValue">0</span> O: <span id="oValue">0</span></span>
+                </div>
+                <form>
+                    <button id="reset_score" type="button">reset score</button>
+                    <button id="multiplayer" type="button" value="0">Enable multiplayer</button>
+                </form>
+                <form>
+                    <p>AI level:&nbsp;<span class="ai-level">0</span></p>
+                    <label for="idSelect">Select AI level:</label>
+                    <select id="idSelect">
+                        <option value="0">0 : Easy</option>
+                        <option value="1">1 : Random</option>
+                        <option value="2">2 : Impossible</option>
+                    </select>
+                    <button id="ai_change" type="button">set AI level</button>
+                </form>
+            </div>
         </div>
-        <form>
-            <button id="reset_score" type="button">reset score</button>
-            <button id="multiplayer" type="button" value="0">Enable multiplayer</button>
-        </form>
-        <form>
-            <p>AI level:&nbsp;<span class="ai-level">0</span></p>
-            <label for="idSelect">Select AI level:</label>
-            <select id="idSelect">
-                <option value="0">0 : Easy</option>
-                <option value="1">1 : Random</option>
-                <option value="2">2 : Impossible</option>
-            </select>
-            <button id="ai_change" type="button">set AI level</button>
-        </form>
-    </div>
 
-</div>
+        <script type="module" src="js/app.js"></script>
 
-<!--<script type="module" src="js/ai.mjs"></script>-->
-<script type="module" src="js/app.js"></script>
-
-</body>
-
+    </body>
 </html>
