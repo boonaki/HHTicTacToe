@@ -26,7 +26,7 @@ class Square {
 
     reset() {
         this.status = -1;
-        document.getElementById(this.id).innerText = ""
+        document.getElementById(this.id).innerText = "";
     }
 
 }
@@ -203,7 +203,7 @@ class GameBoard {
                 }
             }
             if (moves === rowSize ** 2) {
-                if (this.currentPlayer === player && moves === this.moves.size) {
+                if (!simulated) {
                     this.#tied = true;
                     console.log(`${player} has tied`);
                 }
@@ -239,7 +239,7 @@ class GameBoard {
      */
     setWinner(player) {
         this.#won = true;
-        if (player === 1){
+        if (player === 1) {
             this.score.set("x", this.score.get("x") + 1);
         } else {
             this.score.set("o", this.score.get("o") + 1);

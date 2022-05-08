@@ -12,7 +12,7 @@ export class Ai {
         // Ai will start from 0 easiest to 2 hardest
         this.type = type;
         this.moves = new Map();
-        this.possible = [...Array(rowSize ** 2).keys()]
+        this.possible = [...Array(rowSize ** 2).keys()];
         this.playerMoves = [];
         this.score = new Map([[1,5], [2,-5], [0, 0]]);
         this.tree = new Map();
@@ -96,13 +96,13 @@ export class Ai {
      *  the calculated optimal move for the adversary to move on.
      */
     mm(possible, depth, player, moves) {
-        let bScore, adversary
+        let bScore, adversary;
         if (player === 1){
-            bScore = -Infinity
-            adversary = 2
+            bScore = -Infinity;
+            adversary = 2;
         } else {
-            bScore = Infinity
-            adversary = 1
+            bScore = Infinity;
+            adversary = 1;
         }
         const res = this.p.checkWinnerHelper(adversary, moves.length, true);
         if (res !== null) {
@@ -125,7 +125,7 @@ export class Ai {
     }
     reset(){
         this.moves = new Map();
-        this.possible = [...Array(rowSize ** 2).keys()]
+        this.possible = [...Array(rowSize ** 2).keys()];
         this.playerMoves = [];
     }
 }
