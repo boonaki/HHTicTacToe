@@ -1,7 +1,7 @@
 /* 100devs tic-tac-toe js */
 /*https://github.com/Dev-Corinne/TicTacToe*/
 
-import {Ai} from "./ai.mjs";
+import {Ai} from "./ai.js";
 
 const rowSize = 3;
 
