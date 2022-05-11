@@ -132,7 +132,7 @@ class GameBoard {
     setAI(type) {
         this.resetBoard();
         this.ai.setAi(type);
-        this.setAIToPage(type)
+        this.setAIToPage(type);
     }
 
     /**
@@ -179,12 +179,12 @@ class GameBoard {
                         }
                         if (!(i % 2)) {
                             // only check 0 and 2
-                            let d1 = ((i === 0) ? 4 : 3) * 2;
+                            let diagonal_side = ((i === 0) ? 4 : 3) * 2;
                             if (this.board[i].getOwner() === this.board[4].getOwner() &&
-                                this.board[d1].getOwner() === this.board[i].getOwner()) {
+                                this.board[diagonal_side].getOwner() === this.board[i].getOwner()) {
                                 //diagonal win
                                 if (!simulated) {
-                                    this.highlight_win(i, 4, ((i === 0) ? 4 : 3) * 2);
+                                    this.highlight_win(i, 4, diagonal_side);
                                 }
                                 return player;
                             }
@@ -219,7 +219,7 @@ class GameBoard {
         for (const square of this.winningMoves) {
             document.getElementById(`${square}`).style.color = "#AAA";
         }
-        this.winningMoves = []
+        this.winningMoves = [];
     }
 
     /**
@@ -305,6 +305,9 @@ class GameBoard {
     }
 
     init() {
+        // set the score on the page
+        this.onScoreChange();
+        // initialize all squares
         for (const square of document.getElementsByClassName("box")) {
             square.addEventListener("click", (i) => this.onClick(i.target.id));
         }
@@ -343,8 +346,6 @@ class GameBoard {
 
 
 const gameBoard = new GameBoard();
-// set the score on the page
-gameBoard.onScoreChange();
 // init all elements on the page
 gameBoard.init();
 
