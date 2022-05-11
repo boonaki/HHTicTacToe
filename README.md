@@ -9,7 +9,7 @@ A group attempt at a Tic-Tac-Toe game, playable with a bot or a friend (locally)
 
 **Tech used:** HTML, CSS, JavaScript & OOP
 
-As a group, we had designated roles to tackle different parts within the project. The base-frame of the project was completed within our time constraint of 1.5 hours, and after was continously updated and refactored by other contributors.
+As a group, we had designated roles to tackle different parts within the project. The base-frame of the project was completed within our time constraint of 1.5 hours, and after was continuously updated and refactored by other contributors.
 
 ## Optimizations
 
