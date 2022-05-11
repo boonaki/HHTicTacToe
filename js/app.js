@@ -177,7 +177,7 @@ class GameBoard {
                             }
                             return player;
                         }
-                        if (!(i % 2)) {
+                        if (i === 0 || i === 2) {
                             // only check 0 and 2
                             let diagonal_side = ((i === 0) ? 4 : 3) * 2;
                             if (this.board[i].getOwner() === this.board[4].getOwner() &&
